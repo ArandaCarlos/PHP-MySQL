@@ -14,8 +14,8 @@ $resutado = $gsent->fetchAll();
 
 //AGREGAR
 
-if($_POST){
-    var_dump($_POST);
+if(!empty($_POST['color'])){
+    
     $color = $_POST['color'];
     $descripcion = $_POST['descripcion'];
     $sql_agregar = 'INSERT INTO colores (color,descripcion) VALUES (?,?)';
@@ -24,6 +24,19 @@ if($_POST){
 
     header('location:index.php');
 }
+
+//EDITAR
+
+if($_GET){
+    $id = $_GET['id'];
+    $sql_unico= 'SELECT * FROM colores WHERE id=?';
+    $gsent_unico= $pdo->prepare($sql_unico);
+    $gsent_unico->execute(array($id));
+    $resutado_unico = $gsent_unico->fetch();
+    
+}
+
+
 ?>
 
 <!doctype html>
@@ -50,28 +63,49 @@ if($_POST){
                     <?php echo $dato['color']?>
                     -
                     <?php echo $dato['descripcion']?>
+                    
+                    <a href="eliminar.php?id=<?php echo $dato['id']?>" class="float-right ml-3" id="eliminar">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                    <a href="index.php?id=<?php echo $dato['id']?>" class="float-right">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    
                 </div>
 
                 <?php endforeach ?>
+            
             </div>
             <div class="col-md-6">
-                <h2>Agregar Elementos</h2>
-                <form method="POST">
-                    <input type="text" class="form-control" name="color">
-                    <input type="text" class="form-control mt-3" name="descripcion">
-                    <button class="btn btn-primary mt-3">Agregar</button>
-                </form>
+                <?php if(!$_GET): ?>
+                    <h2>Agregar Elementos</h2>
+                    <form method="POST">
+                        <input type="text" class="form-control" name="color">
+                        <input type="text" class="form-control mt-3" name="descripcion">
+                        <button class="btn btn-primary mt-3">Agregar</button>
+                    </form>
+                <?php endif ?>
+
+                <?php if($_GET): ?>
+                    <h2>Editar Elemento</h2>
+                    <form method="GET" action="editar.php">
+                        <input type="text" class="form-control" name="color" value="<?php echo $resutado_unico['color']?>">
+                        <input type="text" class="form-control mt-3" name="descripcion" value="<?php echo $resutado_unico['descripcion']?>">
+                        <input type="hidden" value="<?php echo $resutado_unico['id']?>" name="id">
+                        <button class="btn btn-primary mt-3">Editar</button>
+                    </form>
+                <?php endif ?>
             </div>
         </div>
         
     </div>
-
+                    
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
-
-    
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css" integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
+    <script type="text/javascript" src="main.js"></script>
   </body>
 </html>
